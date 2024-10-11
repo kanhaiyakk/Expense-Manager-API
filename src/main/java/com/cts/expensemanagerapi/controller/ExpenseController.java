@@ -6,15 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.cts.expensemanagerapi.entity.Expense;
 import com.cts.expensemanagerapi.service.ExpenseService;
@@ -22,18 +15,19 @@ import com.cts.expensemanagerapi.service.ExpenseService;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/expense")
 public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
     @GetMapping("/expenses")
-    public List<Expense> getAllExpense(Pageable page) {
-        return expenseService.getAllExpenses(page).toList();
+    public ResponseEntity< List<Expense>> getAllExpense(Pageable page) {
+        return new ResponseEntity<>(expenseService.getAllExpenses(page).toList(),HttpStatus.OK);
     }
 
     @GetMapping("/expenses/{id}")
-    public Expense getExpenseById(@PathVariable Long id) {
-        return expenseService.getExpenseById(id);
+    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id) {
+        return new ResponseEntity<>( expenseService.getExpenseById(id),HttpStatus.OK);
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -42,10 +36,10 @@ public class ExpenseController {
         expenseService.deleteExpenseById(id);
     }
 
-    @ResponseStatus(value = HttpStatus.CREATED)
+    //@ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping("/expenses")
-    public Expense saveExpenseDetails(@Valid @RequestBody Expense expense) {
-        return expenseService.saveExpenseDetails(expense);
+    public ResponseEntity<Expense> saveExpenseDetails(@Valid @RequestBody Expense expense) {
+        return new ResponseEntity<>(expenseService.saveExpenseDetails(expense),HttpStatus.CREATED);
     }
 
     @PutMapping("/expenses/{id}")
